@@ -9,38 +9,38 @@ mysql_config = {
     'database': 'test'
 }
 
-try:
-    # Connect to MySQL
-    cnx = mysql.connector.connect(**mysql_config)
-    cursor = cnx.cursor()
+def fetch_data(mysql_config):
+    try:
+        cnx = mysql.connector.connect(**mysql_config)
+        cursor = cnx.cursor()
+        query = "SELECT * FROM Data WHERE Flag = TRUE"
+        cursor.execute(query)
+        data = cursor.fetchall()
+        headers = [i[0] for i in cursor.description]
+        return headers, data
+    finally:
+        cursor.close()
+        cnx.close()
 
-    # Select data where Flag is true
-    query = "SELECT * FROM Data WHERE Flag = TRUE"
-    cursor.execute(query)
-
-    # Export data to a local file
-    with open('exported.dat', 'w', newline='') as file:
+def export_data(filename, headers, data):
+    with open(filename, 'w', newline='') as file:
         writer = csv.writer(file)
-        headers = [i[0] for i in cursor.description]  # Capture headers
-        writer.writerow(headers)  # write headers
-        writer.writerows(cursor)
+        writer.writerow(headers)
+        writer.writerows(data)
 
-    # Assuming 'StringA' and 'StringB' are columns in your exported data
-    # Read data from the exported file, transform it, and write to 'transformed.dat'
-    with open('exported.dat', 'r', newline='') as infile, open('transformed.dat', 'w', newline='') as outfile:
+def transform_data(input_file, output_file):
+    with open(input_file, 'r', newline='') as infile, open(output_file, 'w', newline='') as outfile:
         reader = csv.DictReader(infile)
         writer = csv.DictWriter(outfile, fieldnames=reader.fieldnames)
         writer.writeheader()
-        
         for row in reader:
-            # Transform 'StringA' based on 'StringB'
             row['StringA'] = row['StringB'].upper() + '_'
             writer.writerow(row)
 
-except mysql.connector.Error as err:
-    print(f"Error: {err}")
-finally:
-    if cnx.is_connected():
-        cursor.close()
-        cnx.close()
+try:
+    headers, data = fetch_data(mysql_config)
+    export_data('exported.dat', headers, data)
+    transform_data('exported.dat', 'transformed.dat')
+except Exception as e:
+    print(e)
 
