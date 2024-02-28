@@ -21,3 +21,9 @@ npm run start
 ```
 
 ```
+
+5. unit testing
+
+```
+npm run test
+```
