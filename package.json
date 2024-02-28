@@ -7,7 +7,8 @@
     "test": "pytest test_app.py",
     "start": "python3 app.py",
     "install:deps": "python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt",
-    "start:db": "docker-compose up -d"
+    "start:db": "docker-compose up -d",
+    "dataload": "python3 redshift_data_loader.py transformed.dat"
   },
   "keywords": [],
   "author": "",
