@@ -19,7 +19,7 @@ npm run start
 4. import data to redshift
 
 ```
-
+TODO: wip
 ```
 
 5. unit testing
